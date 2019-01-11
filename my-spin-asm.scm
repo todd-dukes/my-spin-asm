@@ -663,4 +663,6 @@
 		       (print (string-upcase (intel-hex-record 4 addr data-record data)))
 		       (set! addr (+ 4 addr)))
 		     (quit #f)))
-	       (vector->list *memory-map*)))))
+	       (vector->list *memory-map*))))
+  (print ":00000001ff"))
+
