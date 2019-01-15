@@ -1,0 +1,109 @@
+; each opcode with different argument types (why aren't they alphabetical in the manual?)
+
+Off EQU 1.0
+       sof 0,0
+       sof 1.0, -Off
+       sof $1, 0.20
+
+AMASK EQU $F0fff
+
+       and $fffffe
+       and %0001_1001_1111
+       and AMASK
+
+       or %1000_0001
+       or $1
+       or AMASK
+
+       xor %1001_1111
+       xor $f4
+       xor AMASK
+
+       log 1.748, 0
+       log -1.2, 3.815
+
+       exp 0.8, 0
+       exp 1.222, 0.112
+
+       skp N, neg
+       skp 0,0
+       skp %101,62
+       skp GEZ, pos
+       sof -1,0, 0
+pos:   wrax DACL, 0
+
+       rdax ADCL, 0.5
+       rdax 61, $7f0e
+       rdax Off, AMASK
+
+       wrax ADCL, 0.5
+       wrax 61, $7f0e
+       wrax Off, AMASK
+
+Peak EQU 32
+       maxx 0, 1.0
+       maxx 35, $7f03
+       maxx Peak, Off
+
+       mulx ADCL
+       mulx 27
+       mulx Peak
+
+       rdfx 7
+       rdfx $13
+       rdfx ADCL
+
+       wrlx 32, 0.213465
+       wrlx $13, $4ff2
+       wrlx Peak, Off
+
+       wrhx 30, 0.213465
+       wrhx $1d, $48f2
+       wrhx Peak, Off
+
+Delay MEM 1024
+Coeff EQU 1.55
+Tmp   EQU $2000
+
+       rda 1000, 1.9
+       rda Delay+20, Coeff
+       rda Tmp, -2
+       rda $7fff, $7ff
+
+       rmpa 1.0
+       rmpa $112
+       rmpa Off
+
+       wra 1, 1.1
+       wra $a, $eff
+       wra Delay, Coeff
+
+       wrap ap1, -kap
+
+Amp   EQU 8194
+Freq  EQU 51
+
+       wlds 0, Freq, Amp
+
+       wldr 0, Freq, Amp
+
+       jam 0
+       jam 1
+
+       cho rda, SIN0, REG|COMPC, Delay^
+       cho rda, SIN0,,Delay^+1
+
+       cho sof, RMP0, NA | COMPC, 0
+
+       cho rdal, SIN0
+
+       clr
+
+       not
+
+       absa
+
+       ldax adcl
+
+
+       

@@ -1,3 +1,9 @@
 
-my-spin-asm: my-spin-asm.scm
-	bigloo -g -safeatrsvle -static-all-bigloo -o my-spin-asm my-spin-asm.scm
+all:
+	make -C src
+	make -C tests
+
+clean:
+	make -C src clean
+	make -C tests clean
+
