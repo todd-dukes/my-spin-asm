@@ -25,40 +25,40 @@ AMASK EQU $F0fff
        exp 0.8, 0
        exp 1.222, 0.112
 
-       skp N, neg
+       skp neg, N
        skp 0,0
-       skp %101,62
+N:    skp %101,62
        skp GEZ, pos
        sof -1,0, 0
 pos:   wrax DACL, 0
 
        rdax ADCL, 0.5
-       rdax 61, $7f0e
-       rdax Off, AMASK
+       ; rdax 61, $7f0e
+       ; rdax Off, AMASK
 
        wrax ADCL, 0.5
-       wrax 61, $7f0e
-       wrax Off, AMASK
+       ; wrax 61, $7f0e
+       ; wrax Off, AMASK
 
 Peak EQU 32
        maxx 0, 1.0
-       maxx 35, $7f03
+       ; maxx 35, $7f03
        maxx Peak, Off
 
        mulx ADCL
        mulx 27
        mulx Peak
 
-       rdfx 7
-       rdfx $13
-       rdfx ADCL
+       rdfx 7, 1.0
+       ;rdfx $13, $7f11
+       rdfx ADCL, Off
 
        wrlx 32, 0.213465
-       wrlx $13, $4ff2
+      ; wrlx $13, $4ff2
        wrlx Peak, Off
 
        wrhx 30, 0.213465
-       wrhx $1d, $48f2
+       ;wrhx $1d, $48f2
        wrhx Peak, Off
 
 Delay MEM 1024
@@ -68,27 +68,29 @@ Tmp   EQU $2000
        rda 1000, 1.9
        rda Delay+20, Coeff
        rda Tmp, -2
-       rda $7fff, $7ff
+       ;rda $7fff, $7ff
 
        rmpa 1.0
        rmpa $112
        rmpa Off
 
        wra 1, 1.1
-       wra $a, $eff
+       ;wra $a, $eff
        wra Delay, Coeff
 
-       wrap ap1, -kap
+       wrap Delay, -Coeff
 
 Amp   EQU 8194
 Freq  EQU 51
+RampAmp EQU 2048
 
        wlds 0, Freq, Amp
 
-       wldr 0, Freq, Amp
+       wldr 0, Freq, RampAmp
 
-       jam 0
-       jam 1
+      ; jam 0 manual says 0 or 1. It means 2 or 3
+       jam 2
+       jam 3
 
        cho rda, SIN0, REG|COMPC, Delay^
        cho rda, SIN0,,Delay^+1

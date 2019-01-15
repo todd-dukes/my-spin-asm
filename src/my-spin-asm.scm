@@ -650,29 +650,38 @@
 
 (define (start argv)
    ;(print argv)
-  (for-each (lambda (predefined-symbol-pair)
-	      (hashtable-put! *symbol-table* (car predefined-symbol-pair) (cadr predefined-symbol-pair)))
-	    *predefined-symbols*)
-  (for-each (lambda (inst)
-	      (hashtable-put! *mnemonic-hash* (car inst) #t))
-	    *spin-instructions*)
-  (read/lalrp *spin-g* *spin-l* (current-input-port))
-  ; pad to end of slot with SKP 0,0
-  (let loop ((addr *current-address*))
-     ;(print "(start - pad to end of slot - current-address " (u->s *current-address*) ")")
-     (when (< *current-address* (* 4 128))
-	(process-mnemonic "skp" 0 0)
-	(loop *current-address*)))
-  (let ((addr (make-elong 0))
-	(data-record (make-elong 0)))
-    (bind-exit
-     (quit)
-     (for-each (lambda (data)
-		 (if data
-		     (begin
-		       (print (string-upcase (intel-hex-record 4 addr data-record data)))
-		       (set! addr (+ 4 addr)))
-		     (quit #f)))
-	       (vector->list *memory-map*))))
-  (print ":00000001ff"))
+   (for-each (lambda (predefined-symbol-pair)
+		(hashtable-put! *symbol-table* (car predefined-symbol-pair) (cadr predefined-symbol-pair)))
+	     *predefined-symbols*)
+   (for-each (lambda (inst)
+		(hashtable-put! *mnemonic-hash* (car inst) #t))
+	     *spin-instructions*)
+   (let ((parse-status
+	  (bind-exit (return)
+	     (with-handler
+		(lambda (exc)
+		   (print "Caught exc while parsing (exc) " exc)
+		   (print "line-number " *line-number*)
+		   (return #f))
+		(read/lalrp *spin-g* *spin-l* (current-input-port))
+		#t))))
+      (when parse-status
+	 ; pad to end of slot with SKP 0,0
+	 (let loop ((addr *current-address*))
+	    ;(print "(start - pad to end of slot - current-address " (u->s *current-address*) ")")
+	    (when (< *current-address* (* 4 128))
+	       (process-mnemonic "skp" 0 0)
+	       (loop *current-address*)))
+	 (let ((addr (make-elong 0))
+	       (data-record (make-elong 0)))
+	    (bind-exit
+		  (quit)
+	       (for-each (lambda (data)
+			    (if data
+				(begin
+				   (print (string-upcase (intel-hex-record 4 addr data-record data)))
+				   (set! addr (+ 4 addr)))
+				(quit #f)))
+			 (vector->list *memory-map*))))
+	 (print ":00000001ff"))))
 

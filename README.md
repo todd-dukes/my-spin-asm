@@ -6,3 +6,5 @@ build targets
 all: makes binary and runs tests
 
 clean: removes all built files
+
+tests do not pass yet.
